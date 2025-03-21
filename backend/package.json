@@ -1,0 +1,13 @@
+{
+  "name": "mindflex-backend",
+  "version": "1.0.0",
+  "description": "Backend API for MindFlex cognitive care app",
+  "main": "app.py",
+  "scripts": {
+    "start": "flask run",
+    "dev": "flask run --debug",
+    "test": "pytest"
+  },
+  "author": "",
+  "license": "MIT"
+} 
