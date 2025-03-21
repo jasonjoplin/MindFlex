@@ -1,12 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get Supabase credentials from environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://pwcrdvhkscairmkwtvmi.supabase.co';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Y3Jkdmhrc2NhaXJta3d0dm1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTUzMDcxNzUsImV4cCI6MjAzMDg4MzE3NX0.DRo4QMcj8Ld4cFZSTxK4nCPFFbH0fz7MFFRiSXBwblw';
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-// Log for debugging
-console.log('Supabase URL:', supabaseUrl);
-console.log('Supabase Anon Key configured:', supabaseAnonKey ? 'Yes' : 'No');
+// Check if credentials are available
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase credentials. Make sure REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY are set in .env');
+}
 
 // Development flag - set to false to use real Supabase
 const DEVELOPMENT_MODE = false;
