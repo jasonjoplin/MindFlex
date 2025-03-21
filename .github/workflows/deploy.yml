@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+# Add permissions section for GitHub token
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
