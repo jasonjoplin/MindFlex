@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Get Supabase credentials from environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+// Get Supabase credentials from environment variables with fallbacks for GitHub Pages
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://pwcrdvhkscairmkwtvmi.supabase.co';
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Y3Jkdmhrc2NhaXJta3d0dm1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDE5OTcsImV4cCI6MjA1NjUxNzk5N30.Tv0LkOuXA0Rk9eM_AnSFz5NBsaezzupg03W0Iw5TWz4';
 
 // Check if credentials are available
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -11,6 +11,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Development flag - set to false to use real Supabase
 const DEVELOPMENT_MODE = false;
+
+// Log credentials status (for debugging)
+console.log('Supabase URL configured:', !!supabaseUrl);
+console.log('Supabase Key configured:', !!supabaseAnonKey);
 
 // Create and export the Supabase client
 export const supabase = createClient(
