@@ -34,6 +34,8 @@ jobs:
       run: |
         cd frontend
         npm run build
+        # Create .nojekyll file to bypass Jekyll processing
+        touch build/.nojekyll
       env:
         CI: false
         REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL || 'https://mindflex-backend.onrender.com/api' }}
