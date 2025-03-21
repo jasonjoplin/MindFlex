@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/MindFlex/static/css/main.d08ca48e.css",
-    "main.js": "/MindFlex/static/js/main.0920e6e7.js",
+    "main.js": "/MindFlex/static/js/main.f63eceb0.js",
     "static/js/198.5db03bd9.chunk.js": "/MindFlex/static/js/198.5db03bd9.chunk.js",
     "static/js/453.30564bb5.chunk.js": "/MindFlex/static/js/453.30564bb5.chunk.js",
     "index.html": "/MindFlex/index.html",
     "main.d08ca48e.css.map": "/MindFlex/static/css/main.d08ca48e.css.map",
-    "main.0920e6e7.js.map": "/MindFlex/static/js/main.0920e6e7.js.map",
+    "main.f63eceb0.js.map": "/MindFlex/static/js/main.f63eceb0.js.map",
     "198.5db03bd9.chunk.js.map": "/MindFlex/static/js/198.5db03bd9.chunk.js.map",
     "453.30564bb5.chunk.js.map": "/MindFlex/static/js/453.30564bb5.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d08ca48e.css",
-    "static/js/main.0920e6e7.js"
+    "static/js/main.f63eceb0.js"
   ]
 }
