@@ -45,6 +45,15 @@ app.register_blueprint(caregiver_routes.bp)
 app.register_blueprint(llm_routes.bp)
 app.register_blueprint(supabase_proxy.bp)
 
+@app.route('/')
+def root():
+    """Redirect root path to API documentation or health check."""
+    return jsonify({
+        "message": "MindFlex API Server",
+        "status": "running",
+        "health_check": "/api/health"
+    })
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint to verify API is running."""
