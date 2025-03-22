@@ -4,6 +4,9 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://pwcrdvhkscairmkwtvmi.supabase.co';
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Y3Jkdmhrc2NhaXJta3d0dm1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDE5OTcsImV4cCI6MjA1NjUxNzk5N30.Tv0LkOuXA0Rk9eM_AnSFz5NBsaezzupg03W0Iw5TWz4';
 
+// Backend API URL for proxy
+const backendUrl = process.env.REACT_APP_API_URL || 'https://mindflex-backend.onrender.com';
+
 // Check if credentials are available
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Missing Supabase credentials. Make sure REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY are set in .env');
@@ -15,6 +18,54 @@ const DEVELOPMENT_MODE = false;
 // Log credentials status (for debugging)
 console.log('Supabase URL configured:', !!supabaseUrl);
 console.log('Supabase Key configured:', !!supabaseAnonKey);
+console.log('Backend URL for proxy:', backendUrl);
+
+// Check if we're running in production (GitHub Pages or other non-localhost)
+const isProduction = window.location.hostname !== 'localhost' && 
+                      window.location.hostname !== '127.0.0.1';
+
+// Custom fetch function to route Supabase requests through our proxy
+const customFetch = async (url, options) => {
+  try {
+    // Determine if this is an auth request or a REST API request
+    const isAuthRequest = url.includes('/auth/v1/');
+    const isRestRequest = url.includes('/rest/v1/');
+    
+    if ((isAuthRequest || isRestRequest) && isProduction) {
+      // Extract the path from the URL (everything after /auth/v1/ or /rest/v1/)
+      const urlObj = new URL(url);
+      const pathMatch = urlObj.pathname.match(/\/(auth|rest)\/v1\/(.*)/);
+      
+      if (!pathMatch) {
+        console.error('Could not parse Supabase path from URL:', url);
+        return fetch(url, options); // Fall back to direct request
+      }
+      
+      const apiType = pathMatch[1]; // 'auth' or 'rest'
+      const subPath = pathMatch[2] || ''; // Everything after /v1/
+      
+      // Build the proxy URL
+      let proxyUrl = `${backendUrl}/api/${apiType}/v1/${subPath}`;
+      
+      // Include query parameters
+      if (urlObj.search) {
+        proxyUrl += urlObj.search;
+      }
+      
+      console.log(`Routing ${apiType} request through proxy:`, proxyUrl);
+      
+      // Keep all the original request options
+      return fetch(proxyUrl, options);
+    }
+    
+    // For non-production or non-auth/rest requests, use direct Supabase API
+    return fetch(url, options);
+  } catch (error) {
+    console.error('Error in customFetch:', error);
+    // Fall back to original fetch
+    return fetch(url, options);
+  }
+};
 
 // Create and export the Supabase client
 export const supabase = createClient(
@@ -25,6 +76,9 @@ export const supabase = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true
+    },
+    global: {
+      fetch: customFetch
     }
   }
 );
@@ -33,10 +87,6 @@ export const supabase = createClient(
 (async function testConnection() {
   try {
     console.log('Testing Supabase connection...');
-    
-    // Check if we're running in production (GitHub Pages or other non-localhost)
-    const isProduction = window.location.hostname !== 'localhost' && 
-                         window.location.hostname !== '127.0.0.1';
     
     // Skip direct API health check in production to avoid CORS issues
     if (!isProduction) {
@@ -59,7 +109,22 @@ export const supabase = createClient(
         console.error('Supabase auth endpoint check failed:', authError);
       }
     } else {
-      console.log('Skipping direct Supabase health check in production environment');
+      console.log('Using proxy for Supabase requests in production environment');
+      
+      // Test the proxy auth endpoint
+      try {
+        const response = await fetch(`${backendUrl}/api/health`, {
+          method: 'GET'
+        });
+        
+        if (response.ok) {
+          console.log('Backend API is accessible');
+        } else {
+          console.error('Backend API check failed with status:', response.status);
+        }
+      } catch (proxyError) {
+        console.error('Backend API check failed:', proxyError);
+      }
     }
     
     // Check auth status using the Supabase client (works in all environments)

@@ -11,12 +11,15 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configure CORS with proper handling of OPTIONS requests
-cors_origins = os.environ.get('CORS_ORIGINS', 'http://localhost:3000').split(',')
+cors_origins = os.environ.get('CORS_ORIGINS', '*').split(',')
+print(f"[DEBUG] CORS origins: {cors_origins}")
 CORS(app, 
      resources={r"/api/*": {"origins": cors_origins}}, 
      supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization", "apikey", "x-client-info", "x-supabase-api-version", "accept-profile"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+     allow_headers=["Content-Type", "Authorization", "apikey", "x-client-info", "x-supabase-api-version", 
+                   "accept-profile", "X-Client-Info", "Range", "Accept", "Accept-Encoding", "Accept-Language"],
+     expose_headers=["Content-Range", "Range", "Content-Length", "Content-Encoding"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"])
 
 # Handle OPTIONS requests to prevent redirects that break CORS
 @app.before_request
@@ -24,9 +27,11 @@ def handle_options_request():
     if request.method == 'OPTIONS':
         response = make_response()
         response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
-        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey, x-client-info, x-supabase-api-version, accept-profile')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey, x-client-info, x-supabase-api-version, accept-profile, X-Client-Info, Range, Accept, Accept-Encoding, Accept-Language')
+        response.headers.add('Access-Control-Expose-Headers', 'Content-Range, Range, Content-Length, Content-Encoding')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Access-Control-Max-Age', '3600')
         return response
 
 # Import routes after app initialization to avoid circular imports
