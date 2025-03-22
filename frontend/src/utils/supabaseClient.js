@@ -4,11 +4,17 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://pwcrdvhkscairmkwtvmi.supabase.co';
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Y3Jkdmhrc2NhaXJta3d0dm1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDE5OTcsImV4cCI6MjA1NjUxNzk5N30.Tv0LkOuXA0Rk9eM_AnSFz5NBsaezzupg03W0Iw5TWz4';
 
-// Backend API URL for proxy - Remove trailing /api if it exists
+// Backend API URL for proxy - Ensure consistent formatting without trailing slash
 const backendUrlRaw = process.env.REACT_APP_API_URL || 'https://mindflex-backend.onrender.com';
-const backendUrl = backendUrlRaw.endsWith('/api') 
-  ? backendUrlRaw.slice(0, -4) // Remove trailing /api
-  : backendUrlRaw;
+
+// Normalize the URL: remove trailing slashes and /api suffix
+let backendUrl = backendUrlRaw;
+if (backendUrl.endsWith('/')) {
+  backendUrl = backendUrl.slice(0, -1);
+}
+if (backendUrl.endsWith('/api')) {
+  backendUrl = backendUrl.slice(0, -4);
+}
 
 // Check if credentials are available
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -48,7 +54,7 @@ const customFetch = async (url, options) => {
       const apiType = pathMatch[1]; // 'auth' or 'rest'
       const subPath = pathMatch[2] || ''; // Everything after /v1/
       
-      // Build the proxy URL - FIXED to avoid duplicate /api/
+      // Build the proxy URL - Ensure consistent path structure
       let proxyUrl = `${backendUrl}/api/${apiType}/v1/${subPath}`;
       
       // Include query parameters
@@ -115,7 +121,7 @@ export const supabase = createClient(
     } else {
       console.log('Using proxy for Supabase requests in production environment');
       
-      // Test the proxy auth endpoint - FIXED to avoid duplicate /api/
+      // Test the health endpoint with consistent format
       try {
         const response = await fetch(`${backendUrl}/api/health`, {
           method: 'GET'

@@ -1,9 +1,14 @@
 import axios from 'axios';
 import { supabase } from '../utils/supabaseClient';
 
-// Create axios instance with base URL
+// Create axios instance with base URL - Make sure to include /api in the path
+const baseUrlRaw = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Normalize: remove trailing slash if present
+const baseUrl = baseUrlRaw.endsWith('/') ? baseUrlRaw.slice(0, -1) : baseUrlRaw;
+
+// Create axios instance with normalized base URL
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: `${baseUrl}/api`,
 });
 
 // Add auth token to requests

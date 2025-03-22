@@ -27,8 +27,13 @@ const DEFAULT_SETTINGS = {
 };
 
 // Create axios instance for LLM API
+const baseUrlRaw = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Normalize: remove trailing slash if present
+const baseUrl = baseUrlRaw.endsWith('/') ? baseUrlRaw.slice(0, -1) : baseUrlRaw;
+
+// Create axios instance with normalized base URL
 const llmAxios = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: `${baseUrl}/api`,
 });
 
 // Get settings from local storage

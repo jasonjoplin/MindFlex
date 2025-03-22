@@ -49,7 +49,7 @@ Update your frontend environment to point to your new backend:
 
 1. Create a `.env.production` file in your frontend directory with:
 ```
-REACT_APP_API_URL=https://your-render-app-name.onrender.com/api
+REACT_APP_API_URL=https://your-render-app-name.onrender.com
 ```
 
 2. Rebuild and redeploy your frontend

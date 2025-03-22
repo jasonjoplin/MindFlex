@@ -75,7 +75,7 @@ Create a `.env` file in the frontend directory with:
 ```
 REACT_APP_SUPABASE_URL=your_supabase_url
 REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
-REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_API_URL=http://localhost:5000
 ```
 
 ## Usage
