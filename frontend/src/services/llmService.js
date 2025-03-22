@@ -67,6 +67,20 @@ export const llmApi = {
 
   // Get available Ollama models directly from Ollama API
   getOllamaModels: async (baseUrl = 'http://localhost:11434') => {
+    // Check if we're running in a production environment (not on localhost)
+    const isProduction = window.location.hostname !== 'localhost' && 
+                         window.location.hostname !== '127.0.0.1';
+                         
+    // If in production, don't even try to connect to localhost Ollama
+    if (isProduction && baseUrl.includes('localhost')) {
+      console.log('Running in production environment, skipping local Ollama connection');
+      return [
+        { name: 'llama3:8b-instruct-q8_0', modified_at: new Date().toISOString() },
+        { name: 'llama2:latest', modified_at: new Date().toISOString() },
+        { name: 'mistral:latest', modified_at: new Date().toISOString() }
+      ];
+    }
+    
     try {
       console.log('Fetching Ollama models from:', `${baseUrl}/api/tags`);
       const response = await axios.get(`${baseUrl}/api/tags`);

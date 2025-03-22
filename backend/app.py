@@ -15,7 +15,7 @@ cors_origins = os.environ.get('CORS_ORIGINS', 'http://localhost:3000').split(','
 CORS(app, 
      resources={r"/api/*": {"origins": cors_origins}}, 
      supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization"],
+     allow_headers=["Content-Type", "Authorization", "apikey"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 # Handle OPTIONS requests to prevent redirects that break CORS
@@ -25,7 +25,7 @@ def handle_options_request():
         response = make_response()
         response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
 

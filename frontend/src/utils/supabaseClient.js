@@ -34,26 +34,35 @@ export const supabase = createClient(
   try {
     console.log('Testing Supabase connection...');
     
-    // Check authentication endpoint availability
-    try {
-      const response = await fetch(`${supabaseUrl}/auth/v1/health`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseAnonKey
+    // Check if we're running in production (GitHub Pages or other non-localhost)
+    const isProduction = window.location.hostname !== 'localhost' && 
+                         window.location.hostname !== '127.0.0.1';
+    
+    // Skip direct API health check in production to avoid CORS issues
+    if (!isProduction) {
+      // Only run this in development environments
+      try {
+        const response = await fetch(`${supabaseUrl}/auth/v1/health`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseAnonKey
+          }
+        });
+        
+        if (response.ok) {
+          console.log('Supabase auth endpoint is accessible');
+        } else {
+          console.error('Supabase auth endpoint check failed with status:', response.status);
         }
-      });
-      
-      if (response.ok) {
-        console.log('Supabase auth endpoint is accessible');
-      } else {
-        console.error('Supabase auth endpoint check failed with status:', response.status);
+      } catch (authError) {
+        console.error('Supabase auth endpoint check failed:', authError);
       }
-    } catch (authError) {
-      console.error('Supabase auth endpoint check failed:', authError);
+    } else {
+      console.log('Skipping direct Supabase health check in production environment');
     }
     
-    // Check auth status manually
+    // Check auth status using the Supabase client (works in all environments)
     try {
       const { data, error } = await supabase.auth.getSession();
       if (error) {
