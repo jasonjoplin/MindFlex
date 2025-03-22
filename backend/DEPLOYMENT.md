@@ -21,13 +21,16 @@ Before deploying, ensure:
    - **Name**: mindflex-backend
    - **Runtime**: Python 3
    - **Build Command**: `pip install -r backend/requirements.txt`
-   - **Start Command**: `cd backend && gunicorn app:app`
+   - **Start Command**: `cd backend && gunicorn wsgi:app`
    - **Root Directory**: `/` (repository root)
    - **Branch**: main (or your preferred branch)
 
 6. Add Environment Variables:
    - Add all variables from your `.env` file
-   - Ensure `CORS_ORIGINS` includes your GitHub Pages URL: `https://jasonjoplin.github.io`
+   - **IMPORTANT**: Ensure `CORS_ORIGINS` includes your GitHub Pages URL without trailing slashes:
+     ```
+     https://jasonjoplin.github.io,https://jasonjoplin.github.io/MindFlex,http://localhost:3000
+     ```
 
 7. Deploy your service
 
@@ -38,7 +41,7 @@ FLASK_ENV=production
 PORT=10000
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_service_key
-CORS_ORIGINS=https://jasonjoplin.github.io,http://localhost:3000
+CORS_ORIGINS=https://jasonjoplin.github.io,https://jasonjoplin.github.io/MindFlex,http://localhost:3000
 OPENAI_API_KEY=your_openai_key (if using)
 ANTHROPIC_API_KEY=your_anthropic_key (if using)
 ```
@@ -64,7 +67,7 @@ REACT_APP_API_URL=https://your-render-app-name.onrender.com
 4. Configure as a Python service
 5. Set the following:
    - Root directory: `backend`
-   - Start command: `gunicorn app:app`
+   - Start command: `gunicorn wsgi:app`
    - Add all environment variables
 
 ### PythonAnywhere
