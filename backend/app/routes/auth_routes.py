@@ -55,18 +55,30 @@ def supabase_token_proxy():
     if request.method == 'OPTIONS':
         return '', 200
     
+    print(f"[DEBUG] Received token request with method: {request.method}")
+    print(f"[DEBUG] Request path: {request.path}")
+    print(f"[DEBUG] Query string: {request.query_string}")
+    
     # Get Supabase credentials from env
     supabase_url = os.environ.get('SUPABASE_URL')
     supabase_key = os.environ.get('SUPABASE_KEY')
     
+    print(f"[DEBUG] SUPABASE_URL configured: {bool(supabase_url)}")
+    print(f"[DEBUG] SUPABASE_KEY configured: {bool(supabase_key)}")
+    
     if not supabase_url or not supabase_key:
-        return jsonify({"error": "Supabase credentials not configured on server"}), 500
+        return jsonify({
+            "error": "Supabase credentials not configured on server",
+            "details": "Please set SUPABASE_URL and SUPABASE_KEY environment variables"
+        }), 500
     
     # Forward the request to Supabase
     if request.query_string:
         supabase_endpoint = f"{supabase_url}/auth/v1/token?{request.query_string.decode('utf-8')}"
     else:
         supabase_endpoint = f"{supabase_url}/auth/v1/token"
+    
+    print(f"[DEBUG] Forwarding to: {supabase_endpoint}")
     
     # Forward all headers and the body
     headers = {
@@ -78,13 +90,18 @@ def supabase_token_proxy():
     for header in ['Authorization', 'x-client-info', 'x-supabase-api-version']:
         if header in request.headers:
             headers[header] = request.headers[header]
+            print(f"[DEBUG] Forwarding header: {header}")
+    
+    print(f"[DEBUG] Request JSON: {request.get_json(silent=True)}")
     
     try:
         response = requests.post(
             supabase_endpoint,
             headers=headers,
-            json=request.json
+            json=request.get_json(silent=True)
         )
+        
+        print(f"[DEBUG] Supabase response status: {response.status_code}")
         
         # Return the response from Supabase
         return Response(
@@ -93,6 +110,7 @@ def supabase_token_proxy():
             content_type=response.headers.get('Content-Type', 'application/json')
         )
     except Exception as e:
+        print(f"[ERROR] Proxy request failed: {str(e)}")
         return jsonify({"error": f"Failed to proxy request: {str(e)}"}), 500
 
 # Generic Supabase Auth Proxy to handle all auth endpoints
@@ -102,18 +120,29 @@ def supabase_auth_proxy(subpath):
     if request.method == 'OPTIONS':
         return '', 200
     
+    print(f"[DEBUG] Generic auth proxy: {request.method} {subpath}")
+    print(f"[DEBUG] Query string: {request.query_string}")
+    
     # Get Supabase credentials from env
     supabase_url = os.environ.get('SUPABASE_URL')
     supabase_key = os.environ.get('SUPABASE_KEY')
     
+    print(f"[DEBUG] SUPABASE_URL configured: {bool(supabase_url)}")
+    print(f"[DEBUG] SUPABASE_KEY configured: {bool(supabase_key)}")
+    
     if not supabase_url or not supabase_key:
-        return jsonify({"error": "Supabase credentials not configured on server"}), 500
+        return jsonify({
+            "error": "Supabase credentials not configured on server",
+            "details": "Please set SUPABASE_URL and SUPABASE_KEY environment variables"
+        }), 500
     
     # Forward the request to Supabase
     if request.query_string:
         supabase_endpoint = f"{supabase_url}/auth/v1/{subpath}?{request.query_string.decode('utf-8')}"
     else:
         supabase_endpoint = f"{supabase_url}/auth/v1/{subpath}"
+    
+    print(f"[DEBUG] Forwarding to: {supabase_endpoint}")
     
     # Forward all headers and the body
     headers = {
@@ -125,33 +154,41 @@ def supabase_auth_proxy(subpath):
     for header in ['Authorization', 'x-client-info', 'x-supabase-api-version', 'accept-profile']:
         if header in request.headers:
             headers[header] = request.headers[header]
+            print(f"[DEBUG] Forwarding header: {header}")
     
     try:
         # Use the appropriate HTTP method
         if request.method == 'GET':
+            print(f"[DEBUG] Sending GET request")
             response = requests.get(
                 supabase_endpoint,
                 headers=headers
             )
         elif request.method == 'POST':
+            print(f"[DEBUG] Sending POST request with data: {request.get_json(silent=True)}")
             response = requests.post(
                 supabase_endpoint,
                 headers=headers,
-                json=request.json if request.is_json else None
+                json=request.get_json(silent=True)
             )
         elif request.method == 'PUT':
+            print(f"[DEBUG] Sending PUT request")
             response = requests.put(
                 supabase_endpoint,
                 headers=headers,
-                json=request.json if request.is_json else None
+                json=request.get_json(silent=True)
             )
         elif request.method == 'DELETE':
+            print(f"[DEBUG] Sending DELETE request")
             response = requests.delete(
                 supabase_endpoint,
                 headers=headers
             )
         else:
             return jsonify({"error": f"Unsupported method: {request.method}"}), 405
+        
+        print(f"[DEBUG] Supabase response status: {response.status_code}")
+        print(f"[DEBUG] Supabase response: {response.text[:200]}...")
         
         # Return the response from Supabase
         return Response(
@@ -160,4 +197,5 @@ def supabase_auth_proxy(subpath):
             content_type=response.headers.get('Content-Type', 'application/json')
         )
     except Exception as e:
+        print(f"[ERROR] Proxy request failed: {str(e)}")
         return jsonify({"error": f"Failed to proxy request: {str(e)}"}), 500 
