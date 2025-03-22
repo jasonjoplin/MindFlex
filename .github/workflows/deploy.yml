@@ -38,7 +38,7 @@ jobs:
         touch build/.nojekyll
       env:
         CI: false
-        REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL || 'https://mindflex-backend.onrender.com/api' }}
+        REACT_APP_API_URL: https://mindflex-backend.onrender.com/api
         REACT_APP_SUPABASE_URL: ${{ secrets.REACT_APP_SUPABASE_URL }}
         REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
         

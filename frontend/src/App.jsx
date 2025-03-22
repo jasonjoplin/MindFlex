@@ -17,6 +17,7 @@ import AchievementsPage from './components/achievements/AchievementsPage';
 import PatientJourneyPage from './pages/PatientJourneyPage';
 import LLMSettingsPage from './pages/LLMSettingsPage';
 import ChatPage from './pages/ChatPage';
+import ApiDebugger from './pages/ApiDebugger';
 import { ThemeProviderWrapper } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { LLMProvider } from './contexts/LLMContext';
@@ -73,6 +74,7 @@ function App() {
                 <Route path="/patient-journey" element={<PatientJourneyPage />} />
                 <Route path="/settings/llm" element={<LLMSettingsPage />} />
                 <Route path="/chat" element={<ChatPage />} />
+                <Route path="/api-debug" element={<ApiDebugger />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
