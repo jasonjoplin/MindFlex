@@ -30,7 +30,7 @@ def handle_options_request():
         return response
 
 # Import routes after app initialization to avoid circular imports
-from app.routes import auth_routes, game_routes, therapy_routes, caregiver_routes, llm_routes
+from app.routes import auth_routes, game_routes, therapy_routes, caregiver_routes, llm_routes, supabase_proxy
 
 # Register blueprints
 app.register_blueprint(auth_routes.bp)
@@ -38,6 +38,7 @@ app.register_blueprint(game_routes.bp)
 app.register_blueprint(therapy_routes.bp)
 app.register_blueprint(caregiver_routes.bp)
 app.register_blueprint(llm_routes.bp)
+app.register_blueprint(supabase_proxy.bp)
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
