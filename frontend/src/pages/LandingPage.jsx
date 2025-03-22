@@ -56,6 +56,7 @@ import { supabase } from '../utils/supabaseClient';
 
 // Import Three.js
 import * as THREE from 'three';
+import { getImageUrl } from '../utils/imageUtils';
 
 const LandingPage = () => {
   const theme = useTheme();
@@ -70,12 +71,12 @@ const LandingPage = () => {
   
   // Slideshow images and state
   const [slideshowImages] = useState([
-    '/images/patient-journey/Screenshot 2025-03-14 170849.png',
-    '/images/patient-journey/Screenshot 2025-03-14 170918.png',
-    '/images/patient-journey/Screenshot 2025-03-14 170935.png',
-    '/images/patient-journey/Screenshot 2025-03-14 170947.png',
-    '/images/patient-journey/Screenshot 2025-03-14 171009.png',
-    '/images/patient-journey/Screenshot 2025-03-14 171025.png',
+    '/images/patient-journey/Screenshot%202025-03-14%20170849.png',
+    '/images/patient-journey/Screenshot%202025-03-14%20170918.png',
+    '/images/patient-journey/Screenshot%202025-03-14%20170935.png',
+    '/images/patient-journey/Screenshot%202025-03-14%20170947.png',
+    '/images/patient-journey/Screenshot%202025-03-14%20171009.png',
+    '/images/patient-journey/Screenshot%202025-03-14%20171025.png',
   ]);
   
   // Slideshow controls
@@ -164,6 +165,22 @@ const LandingPage = () => {
   // Toggle password visibility
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+  
+  // Function to properly encode image paths for GitHub Pages
+  const getImageUrl = (path) => {
+    // For GitHub Pages, we need to ensure paths are properly formed
+    // If the app is running on GitHub Pages, prepend the repo name to the path
+    const isGitHubPages = window.location.hostname === 'jasonjoplin.github.io';
+    const repoName = 'MindFlex';
+    
+    if (isGitHubPages) {
+      // Make sure path starts with slash
+      const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+      return `/${repoName}${normalizedPath}`;
+    }
+    
+    return path;
   };
   
   // Handle login submission
@@ -1964,7 +1981,7 @@ const LandingPage = () => {
                             
                             {/* Actual image */}
                             <img
-                              src={image}
+                              src={getImageUrl(image)}
                               alt={`Patient Journey Step ${index + 1}`}
                               style={{
                                 width: '100%',
