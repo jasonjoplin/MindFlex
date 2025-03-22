@@ -36,6 +36,8 @@ jobs:
         npm run build
         # Create .nojekyll file to bypass Jekyll processing
         touch build/.nojekyll
+        # Create 404.html file to handle SPA routing
+        cp build/index.html build/404.html
       env:
         CI: false
         REACT_APP_API_URL: https://mindflex-backend.onrender.com
