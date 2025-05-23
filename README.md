@@ -74,6 +74,8 @@ The local Supabase environment is managed via Docker Compose using the configura
 
     The database schema (including tables from `supabase_docker/volumes/db/app_schema/`) will be automatically applied when the database container starts for the first time.
 
+    **Note on Database Schema:** The local Supabase setup now initializes with a comprehensive database schema, including tables for all major application features (user profiles, roles, caregiver/patient interactions, games, therapy content, chat, etc.) and detailed Role-Level Security (RLS) policies. Developers can inspect the SQL scripts in the `supabase_docker/volumes/db/app_schema/` directory to understand the table structures and RLS rules.
+
 ### 2. Configuring Your Application to Use Local Supabase
 
 #### Frontend Configuration:

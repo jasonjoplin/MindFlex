@@ -1,1 +1,0 @@
--- SQL to update scores table with proper columns
