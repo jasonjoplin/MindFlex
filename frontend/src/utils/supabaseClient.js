@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Get Supabase credentials from environment variables with fallbacks for GitHub Pages
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://pwcrdvhkscairmkwtvmi.supabase.co';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3Y3Jkdmhrc2NhaXJta3d0dm1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDE5OTcsImV4cCI6MjA1NjUxNzk5N30.Tv0LkOuXA0Rk9eM_AnSFz5NBsaezzupg03W0Iw5TWz4';
+// Get Supabase credentials from environment variables
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 // Backend API URL for proxy - Ensure consistent formatting without trailing slash
 const backendUrlRaw = process.env.REACT_APP_API_URL || 'https://mindflex-backend.onrender.com';
@@ -18,7 +18,11 @@ if (backendUrl.endsWith('/api')) {
 
 // Check if credentials are available
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase credentials. Make sure REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY are set in .env');
+  const errorMessage = 'CRITICAL ERROR: Missing Supabase credentials. Make sure REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY are set in your .env file and the application is rebuilt if necessary.';
+  console.error(errorMessage);
+  // In a React app, you might throw an error that an ErrorBoundary can catch,
+  // or render a specific "misconfigured" component. For now, throwing an error.
+  throw new Error(errorMessage);
 }
 
 // Development flag - set to false to use real Supabase
@@ -159,3 +163,40 @@ export const supabase = createClient(
 export const isDevelopmentMode = () => DEVELOPMENT_MODE;
 
 export default supabase; 
+
+// Helper function to handle API errors
+export const handleApiError = (error) => {
+  console.error('API Error:', error);
+  return {
+    error: true,
+    message: error.message || 'An unexpected error occurred',
+  };
+};
+
+// Helper function to get authenticated user
+export const getUser = async () => {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  
+  if (error) {
+    return { user: null, error };
+  }
+  
+  return { user: session?.user || null, error: null };
+};
+
+// Helper function to get user profile
+export const getUserProfile = async (userId, userType = 'patient') => {
+  const table = userType === 'patient' ? 'patients' : 'caregivers';
+  
+  const { data, error } = await supabase
+    .from(table)
+    .select('*')
+    .eq('id', userId)
+    .single();
+  
+  if (error) {
+    return { profile: null, error };
+  }
+  
+  return { profile: data, error: null };
+};
